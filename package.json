@@ -1,12 +1,30 @@
 {
-  "name": "org",
+  "name": "flow-ts",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "release": "changeset publish"
+  },
+  "engines": {
+    "node": ">18.0.0",
+    "pnpm": ">=6"
+  },
   "dependencies": {},
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "@nx/js": "19.5.3",
-    "nx": "19.5.3"
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "commitlint": "^19.0.3",
+    "eslint": "^8.57.0",
+    "nx": "19.5.3",
+    "prettier": "^2.8.8",
+    "tsup": "^6.7.0",
+    "typescript": "^5.5.4"
   }
 }

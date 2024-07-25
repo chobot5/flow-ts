@@ -1,0 +1,12 @@
+{
+    "name": "@flow-ts/core",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {},
+    "private": true,
+    "devDependencies": {
+        "@types/node": "^20.14.12",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.5.4"
+    }
+}
