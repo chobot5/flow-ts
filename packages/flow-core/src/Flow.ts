@@ -1,12 +1,14 @@
+
+
 type FlowValue<T> = T extends Flow<infer P> ? P : never
 
-interface Flow<Value> {
-  of: (value: Value) => Flow<Value>
+interface IFlow<Value> {
   map: <NewValue>(fn: (value: Value) => NewValue) => Flow<NewValue>
   flatMap: <B>(fn: (value: Value) => Flow<B>) => Flow<B>
-  run: () => Value
 }
 
+
+/*
 class FlowIterator<T> implements Iterator<T> {
   private done = false
 
@@ -26,62 +28,57 @@ class FlowIterator<T> implements Iterator<T> {
   }
 }
 
+
 class FlowInternal<T> implements Iterable<T> {
   constructor(private value: T) {}
-
-  of(value: T): FlowInternal<T> {
-    return new FlowInternal(value)
-  }
-
-  map<NewValue>(fn: (value: T) => NewValue): FlowInternal<NewValue> {
-    return new FlowInternal(fn(this.value))
-  }
-
-  flatMap<B>(fn: (value: T) => FlowInternal<B>): FlowInternal<B> {
-    return fn(this.value)
-  }
-
-  run(): T {
-    return this.value
-  }
 
   [Symbol.iterator](): FlowIterator<T> {
     return new FlowIterator(this)
   }
 }
 
-const A = new FlowInternal(1).map((x) => x + 1).map((x) => x + 1)
+*/
 
-function* genxxx() {
-  yield A[Symbol.iterator]().next()
-  yield A[Symbol.iterator]().next()
+
+class FlowInternal<R> {
+
+  constructor(private operation: () => (...args: any[]) => R   ) {}
+
+  [Symbol.iterator]() {
+    return this.operation()
+  }
 }
 
-console.log(A[Symbol.iterator]().next())
-console.log(A[Symbol.iterator]().next())
 
-export const Flow = <Value>(value: Value) => {
-  const runnable: Flow<Value> = {
-    of: <Value>(value: Value) => {
-      return Flow(value)
-    },
-    map: <NewValue>(fn: (value: Value) => NewValue) => {
-      return Flow(fn(value))
-    },
-    flatMap: <B>(fn: (v: Value) => Flow<B>) => {
-      const val = fn(value)
-      return val
-    },
-    run: () => value,
+export class Flow<Value> implements IFlow<Value> {
+
+  constructor(private value: Value) {
+
   }
 
-  return runnable
+  map<NewValue>(fn: (value: Value) => NewValue) {
+    const x = new FlowInternal(() => fn)[Symbol.iterator]()
+    return new Flow(fn(this.value))
+  }
+
+  flatMap<B>(fn: (value: Value) => Flow<B>) {
+     const val = fn(this.value)
+    return val
+  }       
 }
 
-const x = Flow(1)
+function* flowGenerator<T,R>(value:T, fn: (val: T)=> R) {
+  yield fn(value)
+}
+
+const x = new Flow(1)
   .map((x) => x + 1)
   .map(() => 'a')
   .map((a) => a)
-  .flatMap((a) => Flow('as'))
+  .flatMap((a) => {
+    console.log(77)
+    return new Flow(true).map(a => 'as')
+  })
   .map((a) => a)
-  .run()
+
+console.log(x)
